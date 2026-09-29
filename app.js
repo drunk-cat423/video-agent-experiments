@@ -9,30 +9,4 @@ const gallery=document.querySelector('#gallery');let product='cup';
 function render(){const isMaterials=product==='materials';document.querySelector('#provider').disabled=isMaterials;if(isMaterials){gallery.innerHTML=[['source-scene.png','人物关键帧','第一张参考图'],['source-cup.jpg','蓝色杯子','第二张参考图'],['source-water.jpg','绿色水瓶','第二张参考图']].map(([file,name,role])=>`<article class="card"><div class="card-head"><h3>${name}</h3><div class="group">${role}</div></div><button class="photo" data-image="assets/${file}" data-title="${name}" aria-label="放大查看 ${name}"><img src="assets/${file}" alt="${name}原始素材" width="1080" height="1920"></button></article>`).join('');return}const provider=document.querySelector('#provider').value;let html='',count=0;for(const g of groups){if(provider!=='all'&&g.provider!==provider)continue;for(const [i,p] of ['cup','water'].entries()){if(product!=='all'&&p!==product)continue;count++;const name=p==='cup'?'蓝色杯子':'绿色水瓶';html+=`<article class="card"><div class="card-head"><div class="provider"><span>${g.provider}</span><span>${g.date} · ${name}</span></div><h3>${g.model}</h3><div class="group">${g.group}</div></div><button class="photo" data-image="assets/${g.id}-${p}.png" data-title="${g.provider} · ${g.model} · ${g.group} · ${name}" aria-label="放大查看 ${g.group} ${g.model} ${name}"><img src="assets/${g.id}-${p}.png" alt="${g.model} ${name} 替换效果" loading="lazy" width="864" height="1536"><span>放大查看 ↗</span></button><div class="card-body"><div class="metrics"><div><span class="price">¥${g.price}</span> <span class="badge ${g.estimate?'estimate':''}">${g.estimate?'估算':'实扣'}</span></div><div class="tech">${g.sizes[i]}<br>${g.times[i]?`约 ${g.times[i]} 秒`:'耗时未记录'}</div></div><p>${g.notes[i]}</p></div></article>`}}gallery.innerHTML=html;}
 document.querySelectorAll('[data-product]').forEach(b=>b.addEventListener('click',()=>{product=b.dataset.product;document.querySelectorAll('[data-product]').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',String(x===b))});render()}));document.querySelector('#provider').addEventListener('change',render);
 const viewer=document.querySelector('#viewer');gallery.addEventListener('click',e=>{const b=e.target.closest('[data-image]');if(!b)return;document.querySelector('#viewer-image').src=b.dataset.image;document.querySelector('#viewer-image').alt=b.dataset.title;document.querySelector('#viewer-title').textContent=b.dataset.title;document.querySelector('#original').href=b.dataset.image;viewer.showModal()});document.querySelector('#close-viewer').addEventListener('click',()=>viewer.close());viewer.addEventListener('click',e=>{if(e.target===viewer){const r=viewer.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)viewer.close()}});
-const sample=`import { readFile, writeFile } from 'node:fs/promises';
-const form = new FormData();
-form.append('image', new Blob([await readFile('scene.png')], {type:'image/png'}), 'scene.png');
-form.append('image', new Blob([await readFile('product.jpg')], {type:'image/jpeg'}), 'product.jpg');
-form.append('model', 'gpt-image-2');
-form.append('prompt', '将第一张图片中人物手中的物品自然地替换成第二张的主体物品');
-form.append('size', '864x1536');
-form.append('quality', 'medium');
-form.append('n', '1'); // AnyAIGC gpt-image-2 实测时省略此项
-const response = await fetch('https://wawapii.com/v1/images/edits', {
-  method: 'POST',
-  headers: {Authorization: 'Bearer ' + process.env.IMAGE_API_KEY},
-  body: form,
-  signal: AbortSignal.timeout(600000)
-});
-const body = await response.json();
-if (!response.ok) throw new Error(JSON.stringify(body));
-const item = Array.isArray(body.data) ? body.data[0] : body.data;
-let bytes;
-if (item?.b64_json) bytes = Buffer.from(item.b64_json, 'base64');
-else if (item?.url) {
-  const imageResponse = await fetch(item.url);
-  if (!imageResponse.ok) throw new Error('图片下载失败');
-  bytes = Buffer.from(await imageResponse.arrayBuffer());
-} else throw new Error('没有可识别的结果图片');
-await writeFile('result.png', bytes);`;
-document.querySelector('#sample').textContent=sample;async function copy(text){try{await navigator.clipboard.writeText(text);document.querySelector('#toast').textContent='已复制'}catch{document.querySelector('#toast').textContent='复制失败，请手动选择文字复制'}document.querySelector('#toast').classList.add('show');setTimeout(()=>document.querySelector('#toast').classList.remove('show'),2000)}document.querySelector('#copy-prompt').addEventListener('click',()=>copy(document.querySelector('#prompt').textContent));document.querySelector('#copy-code').addEventListener('click',()=>copy(sample));render();
+async function copy(text){try{await navigator.clipboard.writeText(text);document.querySelector('#toast').textContent='已复制'}catch{document.querySelector('#toast').textContent='复制失败，请手动选择文字复制'}document.querySelector('#toast').classList.add('show');setTimeout(()=>document.querySelector('#toast').classList.remove('show'),2000)}document.querySelector('#copy-prompt').addEventListener('click',()=>copy(document.querySelector('#prompt').textContent));render();
