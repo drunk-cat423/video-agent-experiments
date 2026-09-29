@@ -1,5 +1,5 @@
 const groups=[
-{id:'anya-2',provider:'AnyAIGC',model:'gpt-image-2',group:'Codex-Gpt-2',price:'0.02641408',estimate:true,date:'09.28',sizes:['941×1672','941×1672'],times:[null,null],notes:['双手握杯较自然，手势和杯子位置仍有调整。','增加了指向瓶子的动作，瓶子位置发生改变。']},
+{id:'anya-2',provider:'AnyAIGC',model:'gpt-image-2',group:'Codex-Gpt-2',price:'0.0264',estimate:true,date:'09.28',sizes:['941×1672','941×1672'],times:[null,null],notes:['双手握杯较自然，手势和杯子位置仍有调整。','增加了指向瓶子的动作，瓶子位置发生改变。']},
 {id:'anya-25',provider:'AnyAIGC',model:'gpt-image-2.5-sunburst-c',group:'Gpt-Image-2',price:'0.1372',estimate:true,date:'09.28',sizes:['864×1536','864×1536'],times:[null,null],notes:['杯子主体完成替换，手部承托关系较自然。','完成水瓶替换，人物改为展示瓶子的姿势。']},
 {id:'waw-2',provider:'WawAPI',model:'gpt-image-2',group:'gpt-image2 生图',price:'0.04',date:'09.29',sizes:['864×1536','941×1672'],times:[54,35],notes:['双手与杯子有接触，手势有所调整。','握持较自然，手势有所调整；未严格遵循请求尺寸。']},
 {id:'waw-25',provider:'WawAPI',model:'gpt-image-2.5-sunburst',group:'gpt-image2 生图',price:'0.04',date:'09.29',sizes:['941×1672','941×1672'],times:[29,36],notes:['单手承托杯子，整体姿势较接近原关键帧。','单手握住瓶子下部，保留伸出的手臂；瓶身角度有所调整。']},
