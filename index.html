@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="商品替换图片模型实测：同一人物关键帧、同一提示词，对比渠道、效果、费用和调用方法。"><title>商品替换实验册 · Video Agent</title><link rel="stylesheet" href="style.css"><script src="app.js" defer></script></head>
+<body>
+<header class="top"><a class="brand" href="#">VA<span> / 实验册</span></a><nav><a href="#results">效果对比</a><a href="#guide">调用指南</a><a href="https://github.com/drunk-cat423/video-agent-experiments">GitHub ↗</a></nav></header>
+<main>
+<section class="intro"><div class="eyebrow">IMAGE EDITING / 2026.09.28—29</div><h1>换一件商品，<br><span>看看差别在哪。</span></h1><p>同一张人物关键帧，两件商品，五种模型与渠道组合。<br>把效果、费用和调用方法放在一起，看图判断。</p><div class="counts">10 张实测结果 <i></i> 2 个服务商 <i></i> 无蒙版</div></section>
+<section class="recipe" aria-label="测试条件"><div><span class="label">所有实验使用同一句提示词</span><p id="prompt">将第一张图片中人物手中的物品自然地替换成第二张的主体物品</p></div><button id="copy-prompt" class="copy">复制提示词</button><div class="settings"><span>第一张：人物关键帧</span><span>第二张：商品参考图</span><span>请求尺寸 864 × 1536</span><span>quality: medium</span></div></section>
+<section id="results"><div class="section-title"><h2>效果对比</h2><span id="result-count" aria-live="polite"></span></div><div class="filters"><div class="segmented" aria-label="选择商品"><button class="active" data-product="cup" aria-pressed="true">蓝色杯子</button><button data-product="water" aria-pressed="false">绿色水瓶</button><button data-product="all" aria-pressed="false">全部</button></div><label>渠道 <select id="provider"><option value="all">所有渠道</option><option value="AnyAIGC">AnyAIGC</option><option value="WawAPI">WawAPI</option></select></label></div><p class="hint">点击图片放大查看。实扣已核对平台账单；估算尚未核对实扣。美元金额按平台显示记录。</p><div id="gallery" class="gallery"></div><noscript>请启用 JavaScript 查看筛选式实验图册。</noscript></section>
+<section id="guide"><div class="section-title"><h2>调用指南</h2><span>保留可复现的设置</span></div><div class="guide-grid"><article><h3>WawAPI</h3><p>普通分组与 Adobe 分组都已完成双图编辑测试，分组在网站的密钥设置中选择。</p><dl><dt>接口</dt><dd><code>POST https://wawapii.com/v1/images/edits</code></dd><dt>普通分组</dt><dd>gpt-image2 生图 · $0.04 / 张（实扣）</dd><dt>Adobe 分组</dt><dd>gpt-image2-adobe 生图 · $0.06 / 张（实扣）</dd><dt>模型</dt><dd>gpt-image-2 或 gpt-image-2.5-sunburst<br>Adobe 分组本次仅测试 gpt-image-2</dd></dl></article><article><h3>AnyAIGC</h3><p>保留 GPT Image 2 与 Sunburst-c 的有效结果。以下金额为测算，尚未与账户实扣核对。</p><dl><dt>接口</dt><dd><code>POST https://anyaigc.ai/v1/images/edits</code></dd><dt>GPT Image 2</dt><dd>Codex-Gpt-2 分组 · 约 $0.00377 / 张</dd><dt>Sunburst-c</dt><dd>Gpt-Image-2 分组 · $0.0196 / 次标价</dd><dt>模型</dt><dd>gpt-image-2 或 gpt-image-2.5-sunburst-c</dd></dl></article></div>
+<details open><summary>请求格式与图片顺序</summary><p>使用 Bearer 密钥鉴权，multipart/form-data 上传。重复使用两个 <code>image</code> 字段：先人物关键帧，再商品图。不传蒙版；由 FormData 自动生成 Content-Type 与 boundary。</p><pre><code>model    = gpt-image-2
+prompt   = 将第一张图片中人物手中的物品自然地替换成第二张的主体物品
+image    = 人物关键帧文件
+image    = 商品参考图文件
+size     = 864x1536
+quality  = medium
+n        = 1</code></pre><p>WawAPI 两个模型与 AnyAIGC Sunburst-c 测试传入 n=1；AnyAIGC GPT Image 2 测试未传 n，默认单张。</p></details>
+<details><summary>可复用的 Node.js 调用示例</summary><p>需要 Node.js 20 或更新版本。通过环境变量传密钥；将调用放在服务端或桌面应用主进程。每次执行会提交一次付费请求。</p><pre><code id="sample"></code></pre><button id="copy-code" class="copy">复制代码</button></details>
+<details><summary>费用计算与验证边界</summary><p>AnyAIGC GPT Image 2 两次分别返回文字输入 24、图片输入 1870、输出 1105 tokens。按核对时 Codex-Gpt-2 分组每百万 token 的 $0.3912、$0.6260、$2.3470 测算，单张 $0.00377344，两张 $0.00754688。Sunburst-c 按 Gpt-Image-2 分组每次 $0.0196 计，两张 $0.0392。以上并非实扣账单。</p><p>WawAPI 普通分组四次实扣共 $0.16，Adobe 分组两次共 $0.12。平台将这些结果标为“2K”，页面展示的是实际文件像素。耗时为本地请求到保存图片的约数；旧 AnyAIGC 记录未统计的耗时不补估。</p><p>这些是单次样本，不代表长期稳定性或质量排名。模型名和分组按请求与平台记录展示，不用于独立证明上游身份；传入 medium 也不等于已验证上游执行了该档位。遇到超时先核对记录，避免重复提交计费。</p></details>
+<p class="sources">来源：<a href="https://wawapii.com/model-plaza">WawAPI 模型广场</a> · <a href="https://anyaigc.ai/pricing?keyword=gpt-image">AnyAIGC 模型广场</a> · <a href="https://developers.openai.com/api/docs/guides/image-generation">OpenAI 图片接口说明</a></p></section>
+</main><footer>VIDEO AGENT / EXPERIMENT NOTES<span>实测记录 · 更新于 2026.09.29</span></footer>
+<dialog id="viewer"><div class="viewer-bar"><strong id="viewer-title"></strong><button id="close-viewer" aria-label="关闭图片预览">×</button></div><img id="viewer-image" alt=""><a id="original" target="_blank" rel="noopener">打开原尺寸图片 ↗</a></dialog><div id="toast" role="status"></div>
+</body></html>
